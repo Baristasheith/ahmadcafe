@@ -1426,10 +1426,10 @@ const UI_STRINGS = {
   },
   en: {
     badge: "Restaurant & Café",
-    title: "Ahmed Restaurant & Café",
+    title: "Ahmad Restaurant & Café",
     subtitle:
       "Calm vibes, easy-on-the-eyes colors, and a full menu of drinks and food. Tap below to browse everything.",
-    cta: "View menu",
+    cta: "View Menu",
     hint: "",
     menuHeading: "Food & Drinks",
     menuIntro: "Tap a category to see items and prices with a photo.",
@@ -1468,11 +1468,11 @@ const UI_STRINGS = {
     selectSectionHint: "Use the rail above to pick a section, then the items will appear here.",
   },
   ku: {
-    badge: "چێشتخانە و قاوەخانە",
-    title: "چێشتخانە و قاوەخانەی ئەحمەد",
+    badge: "چێشتخانە و کافێی ئەحمەد",
+    title: "چێشتخانە و کافێی ئەحمەد",
     subtitle:
       "کاتێکی ئارام، ڕەنگی نەرم بۆ چاو، و لیستێکی پڕ لە خواردن و خواردنەوە. کرتە بکە بۆ بینینی هەموو لیستەکە.",
-    cta: "پیشاندانی لیست",
+    cta: "پیشاندانی مینیۆ",
     hint: "",
     menuHeading: "خواردن و خواردنەوە",
     menuIntro: "بەشێک هەڵبژێرە بۆ بینینی بەرهەم و نرخ و وێنەکەی.",

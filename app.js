@@ -39,9 +39,8 @@
   }
 
   function applyLang(lang) {
-    const rtl = lang === "en" ? "ltr" : "rtl";
     document.documentElement.setAttribute("lang", lang === "ku" ? "ckb" : lang);
-    document.documentElement.setAttribute("dir", rtl);
+    document.documentElement.setAttribute("dir", "rtl");
     document.body.classList.remove("lang-ar", "lang-en", "lang-ku");
     document.body.classList.add("lang-" + lang);
 
@@ -1012,7 +1011,12 @@
     const cta = document.getElementById("ui-cta");
     if (cta) {
       cta.addEventListener("click", () => {
-        setHashMenuHub();
+        const firstCategory = MENU_DATA[0];
+        if (firstCategory) {
+          setHashMenuCategory(firstCategory.id);
+        } else {
+          setHashMenuHub();
+        }
         applyRoute();
       });
     }
