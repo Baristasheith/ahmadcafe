@@ -15,7 +15,8 @@
     if (!h.startsWith("menu")) return { type: "welcome" };
     const tail = h.slice("menu".length).replace(/^\//, "");
     if (!tail) return { type: "menu", cat: null };
-    return { type: "menu", cat: tail };
+    const [cat, item] = tail.split("/");
+    return { type: "menu", cat, item: item === undefined ? null : Number(item) };
   }
 
   function setHashMenuHub() {
@@ -24,6 +25,10 @@
 
   function setHashMenuCategory(catId) {
     window.location.hash = "menu/" + catId;
+  }
+
+  function setHashMenuItem(catId, itemIndex) {
+    window.location.hash = "menu/" + catId + "/" + itemIndex;
   }
 
   function setHashWelcome() {
@@ -41,6 +46,7 @@
   function applyLang(lang) {
     document.documentElement.setAttribute("lang", lang === "ku" ? "ckb" : lang);
     document.documentElement.setAttribute("dir", "rtl");
+    document.body.setAttribute("dir", "rtl");
     document.body.classList.remove("lang-ar", "lang-en", "lang-ku");
     document.body.classList.add("lang-" + lang);
 
@@ -67,10 +73,6 @@
     phone: "",
     address: "",
   };
-
-  function normalizeMenuText(value) {
-    return String(value || "").toLowerCase();
-  }
 
   function loadCart() {
     cart = new Map();
@@ -522,12 +524,6 @@
     const brand = document.getElementById("brand-mini");
     if (brand) brand.textContent = u.title;
 
-    const searchInput = document.getElementById("menu-search-input");
-    if (searchInput) {
-      searchInput.placeholder = u.searchPlaceholder;
-      searchInput.setAttribute("aria-label", u.searchAria);
-    }
-
     updateCartSummary(lang);
 
     if (typeof CONTACT !== "undefined") {
@@ -592,51 +588,25 @@
     });
   }
 
-  let currentMenuQuery = "";
-
-  function itemMatchesQuery(item, query) {
-    if (!query) return true;
-    const haystack = [
-      item.n.ar,
-      item.n.en,
-      item.n.ku,
-      item.d && item.d.ar,
-      item.d && item.d.en,
-      item.d && item.d.ku,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-    return haystack.includes(query);
-  }
-
-  function categoryMatchesQuery(cat, query) {
-    if (!query) return true;
-    return [cat.titles.ar, cat.titles.en, cat.titles.ku]
-      .filter(Boolean)
-      .some((value) => normalizeMenuText(value).includes(query));
-  }
-
   function renderHub(lang) {
     const hub = document.getElementById("menu-hub");
     if (!hub || typeof MENU_DATA === "undefined") return;
+    const previousRail = hub.querySelector(".menu-section-rail");
+    const previousScrollLeft = previousRail ? previousRail.scrollLeft : 0;
     hub.innerHTML = "";
     hub.hidden = false;
-
-    const query = currentMenuQuery.trim().toLowerCase();
-    const filtered = MENU_DATA.filter((cat) => categoryMatchesQuery(cat, query) || cat.items.some((item) => itemMatchesQuery(item, query)));
 
     const route = getMenuRoute();
     const activeCategory = route.type === "menu" ? route.cat : null;
 
     const sectionRail = document.createElement("div");
     sectionRail.className = "menu-section-rail";
+    sectionRail.dir = "rtl";
     sectionRail.setAttribute("role", "tablist");
     sectionRail.setAttribute("aria-label", "أقسام القائمة");
 
     MENU_DATA.forEach((cat) => {
-      const matchingItems = query ? cat.items.filter((item) => itemMatchesQuery(item, query)) : cat.items;
-      const count = matchingItems.length;
+      const count = cat.items.length;
       const sectionButton = document.createElement("button");
       sectionButton.type = "button";
       sectionButton.className = "section-chip" + (activeCategory === cat.id ? " section-chip--active" : "");
@@ -662,15 +632,9 @@
     });
 
     hub.appendChild(sectionRail);
+    sectionRail.scrollLeft = previousScrollLeft;
 
-    requestAnimationFrame(() => {
-      const activeButton = sectionRail.querySelector(".section-chip--active");
-      if (activeButton) {
-        activeButton.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-      }
-    });
-
-    if (!filtered.length) {
+    if (!MENU_DATA.length) {
       const empty = document.createElement("div");
       empty.className = "menu-empty";
       empty.innerHTML = "<p class=\"menu-empty__eyebrow\">اختر قسمًا</p><p class=\"menu-empty__text\">" + UI_STRINGS[lang].selectSectionHint + "</p>";
@@ -686,7 +650,7 @@
     }
   }
 
-  function renderDetail(lang, cat) {
+  function renderDetail(lang, cat, selectedItemIndex) {
     const detail = document.getElementById("menu-detail");
     if (!detail) return;
     detail.classList.remove("is-visible");
@@ -746,7 +710,7 @@
     const list = document.createElement("ul");
     list.className = "detail-list";
 
-    cat.items.forEach((item) => {
+    cat.items.forEach((item, itemIndex) => {
       const name = item.n[lang] || item.n.ar;
       const descText =
         item.d && (item.d[lang] || item.d.ar) ? item.d[lang] || item.d.ar : "";
@@ -755,6 +719,9 @@
 
       const li = document.createElement("li");
       li.className = "detail-row";
+      if (itemIndex === selectedItemIndex) {
+        li.classList.add("detail-row--selected");
+      }
 
       const img = document.createElement("img");
       img.className = "detail-row__img";
@@ -903,6 +870,10 @@
     detail.appendChild(sheet);
     requestAnimationFrame(() => {
       detail.classList.add("is-visible");
+      if (Number.isInteger(selectedItemIndex)) {
+        const selectedRow = detail.querySelector(".detail-row--selected");
+        if (selectedRow) selectedRow.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     });
     updateCartSummary(lang);
     attachImageClickListeners();
@@ -915,11 +886,11 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function showMenuPage() {
+  function showMenuPage(scrollTop) {
     document.getElementById("page-welcome").classList.remove("is-active");
     document.getElementById("page-menu").classList.add("is-active");
     toggleCartDrawer(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (scrollTop !== false) window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function updateTopBar(isDetail) {
@@ -946,7 +917,7 @@
     if (scrollTop !== false) window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function showCategoryDetail(lang, catId, scrollTop) {
+  function showCategoryDetail(lang, catId, scrollTop, selectedItemIndex) {
     const cat = MENU_DATA.find((c) => c.id === catId);
     if (!cat) {
       setHashMenuHub();
@@ -962,7 +933,7 @@
     }
     if (detail) {
       detail.hidden = false;
-      renderDetail(lang, cat);
+      renderDetail(lang, cat, selectedItemIndex);
     }
     toggleCartDrawer(false);
     if (cartSummary) {
@@ -976,7 +947,7 @@
   function refreshMenuView(lang) {
     const route = getMenuRoute();
     if (route.type !== "menu") return;
-    if (route.cat) showCategoryDetail(lang, route.cat, false);
+    if (route.cat) showCategoryDetail(lang, route.cat, false, route.item);
     else showCategoryHub(lang, false);
   }
 
@@ -986,10 +957,10 @@
       showWelcomePage();
       return;
     }
-    showMenuPage();
+    showMenuPage(!(route.cat && Number.isInteger(route.item)));
     const lang = getLang();
     if (route.cat && MENU_DATA.some((c) => c.id === route.cat)) {
-      showCategoryDetail(lang, route.cat, false);
+      showCategoryDetail(lang, route.cat, false, route.item);
     } else if (route.cat) {
       setHashMenuHub();
     } else {
@@ -1011,9 +982,12 @@
     const cta = document.getElementById("ui-cta");
     if (cta) {
       cta.addEventListener("click", () => {
-        const firstCategory = MENU_DATA[0];
-        if (firstCategory) {
-          setHashMenuCategory(firstCategory.id);
+        const items = MENU_DATA.flatMap((cat) =>
+          cat.items.map((item, index) => ({ catId: cat.id, itemIndex: index })),
+        );
+        const randomItem = items[Math.floor(Math.random() * items.length)];
+        if (randomItem) {
+          setHashMenuItem(randomItem.catId, randomItem.itemIndex);
         } else {
           setHashMenuHub();
         }
@@ -1034,14 +1008,6 @@
       backSections.addEventListener("click", () => {
         setHashMenuHub();
         applyRoute();
-      });
-    }
-
-    const searchInput = document.getElementById("menu-search-input");
-    if (searchInput) {
-      searchInput.addEventListener("input", (event) => {
-        currentMenuQuery = event.target.value;
-        renderHub(getLang());
       });
     }
 

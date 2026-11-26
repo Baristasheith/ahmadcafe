@@ -1419,9 +1419,6 @@ const UI_STRINGS = {
     whatsappSendButton: "إرسال إلى واتساب",
     whatsappValidationMessage: "يرجى تعبئة الاسم الكامل والهاتف والعنوان قبل الإرسال.",
     whatsappSendingMessage: "جارٍ فتح واتساب برسالة الطلب...",
-    searchPlaceholder: "ابحث عن صنف...",
-    searchNoResults: "لا توجد نتائج مطابقة لهذا البحث.",
-    searchAria: "بحث عن صنف",
     selectSectionHint: "استخدم الشريط أعلاه لاختيار القسم ثم ستظهر الأصناف هنا.",
   },
   en: {
@@ -1462,9 +1459,6 @@ const UI_STRINGS = {
     whatsappSendButton: "Send to WhatsApp",
     whatsappValidationMessage: "Please complete full name, phone number, and address before sending.",
     whatsappSendingMessage: "Opening WhatsApp with the order message...",
-    searchPlaceholder: "Search for an item...",
-    searchNoResults: "No matching items found.",
-    searchAria: "Search for an item",
     selectSectionHint: "Use the rail above to pick a section, then the items will appear here.",
   },
   ku: {
@@ -1505,9 +1499,6 @@ const UI_STRINGS = {
     whatsappSendButton: "ناردن بۆ واتساب",
     whatsappValidationMessage: "تکایە ناوی تەواو، ژمارەی تەلەفۆن و ناونیشان پێش ناردن تەواو بکە.",
     whatsappSendingMessage: "واتساب دەکرێتەوە بە پیغامەکەی داواکاری...",
-    searchPlaceholder: "بەدوای هەمی بگەڕێ...",
-    searchNoResults: "هیچ ئەنجامێک نەدۆزراوە.",
-    searchAria: "گەڕان لە شوێن خۆراک",
     selectSectionHint: "لە شریتی سەرەوە بەش هەڵبژێرە و ئەنجامی بەشەکە لێرە دەردەکەوێت.",
   },
 };
