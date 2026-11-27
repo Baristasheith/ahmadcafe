@@ -20,3 +20,18 @@
 @media(prefers-reduced-motion:reduce){*,:before,:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .detail-row--selected{margin-inline:-.5rem;padding-inline:.5rem;border:1px solid rgba(240,194,123,.48);border-radius:18px;background:linear-gradient(135deg,rgba(240,194,123,.12),rgba(143,232,223,.07));box-shadow:0 10px 24px rgba(0,0,0,.14),inset 0 0 0 1px rgba(255,255,255,.03)}
 @media(max-width:640px){:root{--teal0:#07171a;--teal1:#0c3034;--teal2:#155058;--gold:#e5bd79;--gold-l:#edcf96;--gold-p:#f7e5c4;--gold-d:#c8914c;--aqua:#a3d8d1;--text:#f2f7f5;--muted:rgba(242,247,245,.78)}.lang-bar{background:rgba(7,23,26,.76);border-bottom-color:rgba(229,189,121,.2)}.back-btn,.detail-back-btn{border-color:rgba(229,189,121,.32);background:rgba(12,48,52,.76)}.section-chip{background:rgba(12,48,52,.62)}.section-chip--active{border-color:rgba(229,189,121,.48);background:linear-gradient(135deg,rgba(229,189,121,.22),rgba(163,216,209,.12))}.detail-row--selected{border-color:rgba(229,189,121,.68);background:linear-gradient(135deg,rgba(229,189,121,.18),rgba(163,216,209,.1));box-shadow:0 12px 28px rgba(0,0,0,.2),inset 0 0 0 1px rgba(255,255,255,.04)}}
+/* ===== إصلاح ظهور الموقع على iPhone / Safari ===== */
+:root{color-scheme:dark}
+html{background-color:#061418;min-height:100%;-webkit-text-size-adjust:100%}
+body{background-color:#0a2a31;min-height:100vh;min-height:100dvh}
+body::before{-webkit-mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.7) 62%,transparent 100%)}
+/* Safari يرسم الخلفية بيضاء عند الجمع بين opacity و backdrop-filter: نستخدم حركة بدون opacity */
+.hero-box{animation:cardRiseSafe .7s cubic-bezier(.2,.8,.3,1)}
+@keyframes cardRiseSafe{from{transform:translateY(24px)}to{transform:none}}
+.menu-detail{opacity:1;transform:none}
+/* نسخ -webkit- لكل backdrop-filter */
+.lang-trigger,.back-btn,.menu-empty,.hub-card,.cart-fab{-webkit-backdrop-filter:blur(16px)}
+.lang-menu,.menu-detail,.cart-drawer,.image-modal__content{-webkit-backdrop-filter:blur(22px)}
+.image-modal__overlay{-webkit-backdrop-filter:blur(10px)}
+/* إظهار النص المتدرج بشكل صحيح */
+h1{-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
